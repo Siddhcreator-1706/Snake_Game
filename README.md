@@ -5,7 +5,7 @@ This is a **C++ implementation** of the **classic Snake game**, designed to run 
 ## 🎯 Features
 - 🚀 **Real-time movement** using keys (`W S A D`)
 - 🍎 **Food spawning** increases the snake’s length
-- ⛔ **Collision detection method** (Walls & Self-collision)
+- ⛔ **Collision detection** (Walls & Self-collision)
 - 🕹️ **Smooth controls** with **non-blocking input**
 - 🎨 **Ncurses-based rendering** for smooth gameplay
 
