@@ -12,3 +12,4 @@ This is a **C++ implementation** of the **classic Snake game**, designed to run 
 ---
 
 ## 📌 **Installation & Setup
+- **Hello destruction** for smooth.
