@@ -2,15 +2,16 @@
 #include <iostream>
 #include <iomanip>
 #include <unistd.h>
+#include <vector>
+#include <ctype.h>
 #ifdef _WIN32
 #include <windows.h>
 #include <conio.h>
 #define getmychar() _getch()
-#define kbhit() _kbhit() 
+#define kbhit() _kbhit()
 #else
 #include <stdbool.h>
-#include <sys/ioctl.h>
-#include <termios.h>
+#include <sys/ioctl.h> // to get terminal size
 #include <termios.h>   // setup terminal features
 #include <fcntl.h>
 #define Sleep usleep
@@ -98,7 +99,7 @@ void getTerminalSize(int &width, int &height)
 class Snake
 {
 private:
-    vector<pair<int, int>> v;
+    vector< pair<int, int> > v;
     int length;
 
 public:
@@ -158,22 +159,21 @@ void resetColor()
 void printBoard()
 {
     int width, height;
-    char c=(char)(177);
     getTerminalSize(width, height);
     width = 3 * min(height, width) / 4;
     height = width;
     setColor(33);
     for (int j = 0; j < height; j++)
     {
-        cout << c << c;
+        cout << setw(2) << "*";
         for (int i = 0; i < width - 2; i++)
         {
             if (j == 0 || j == height - 1)
-                cout << c << c;
+                cout << setw(2) << "*";
             else
                 cout << setw(2) << " ";
         }
-        cout << c << c << endl;
+        cout << setw(2) << "*" << endl;
     }
     resetColor();
 }
