@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <sys/ioctl.h>
 #include <termios.h>
-#include <termios.h>   // setup terminal features
+#include <termios.h> 
 #include <fcntl.h>
 
 void Sleep(int a)
@@ -114,7 +114,13 @@ SnakeDirection userInput(SnakeDirection direction)
 
 void HideCursor()
 {
-    cout << "\033[?25l"; // ANSI escape sequence to hide cursor
+    cout << "\033[?25l";
+    cout.flush();
+}
+
+void ShowCursor()
+{
+    cout << "\033[?25h";
     cout.flush();
 }
 
@@ -425,5 +431,6 @@ int main()
         Sleep(dfc);
     }
     gameResult(playerName, score);
+    ShowCursor();
     return 0;
 }
