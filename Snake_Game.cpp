@@ -1,22 +1,80 @@
 #include <stdio.h>
 #include <iostream>
-#include <iomanip>
 #include <unistd.h>
+<<<<<<< Updated upstream
 #ifdef _WIN32
 #include <windows.h>
 #include <conio.h>
 #define getmychar() _getch()
 #define kbhit() _kbhit() 
+=======
+#include <iomanip>
+#include <vector>
+#include <ctype.h>
+#include <cstdlib>
+#include <time.h>
+#ifdef _WIN32
+#include <windows.h>
+#include <conio.h>
+>>>>>>> Stashed changes
 #else
 #include <stdbool.h>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <termios.h>   // setup terminal features
 #include <fcntl.h>
-#define Sleep usleep
 
-int kbhit()
+void Sleep(int a)
 {
+    usleep(1000 * a);
+}
+
+#endif
+
+using namespace std;
+
+#define MOVE_CURSOR(x, y) cout << "\033[" << (x) << ";" << (y) << "H"
+
+enum SnakeDirection
+{
+    Stop = 0,
+    Up,
+    Down,
+    Left,
+    Right
+};
+bool gameRunning = true;
+int width, height;
+
+SnakeDirection userInput(SnakeDirection direction)
+{
+#ifdef _WIN32
+    if (_kbhit())
+    {
+        switch (tolower(_getch()))
+        {
+        case 'w':
+            if (direction != Down)
+                return Up;
+            break;
+        case 's':
+            if (direction != Up)
+                return Down;
+            break;
+        case 'a':
+            if (direction != Right)
+                return Left;
+            break;
+        case 'd':
+            if (direction != Left)
+                return Right;
+            break;
+        default:
+            return direction;
+            break;
+        }
+    }
+#else
     struct termios oldt, newt;
     int ch;
     int oldf;
@@ -30,44 +88,44 @@ int kbhit()
 
     ch = getchar();
 
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
-
     if (ch != EOF)
     {
-        ungetc(ch, stdin);
-        return 1;
+        switch (tolower(ch))
+        {
+        case 'w':
+            if (direction != Down)
+                return Up;
+            break;
+        case 's':
+            if (direction != Up)
+                return Down;
+            break;
+        case 'a':
+            if (direction != Right)
+                return Left;
+            break;
+        case 'd':
+            if (direction != Left)
+                return Right;
+            break;
+        default:
+            return direction;
+            break;
+        }
     }
-
-    return 0;
-}
-
-char getmychar()
-{
-    struct termios oldt, newt;
-    char ch;
-    int oldf;
-
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
-
-    ch = getchar();
 
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     fcntl(STDIN_FILENO, F_SETFL, oldf);
-
-    return ch;
+#endif
+    return direction;
 }
 
-#endif
+void HideCursor()
+{
+    cout << "\033[?25l"; // ANSI escape sequence to hide cursor
+    cout.flush();
+}
 
-using namespace std;
-
-bool gameRunning = true;
 void getTerminalSize(int &width, int &height)
 {
 #ifdef _WIN32
@@ -84,39 +142,198 @@ void getTerminalSize(int &width, int &height)
     }
 #else
     struct winsize w;
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1 || w.ws_col == 0) {
-        width = 80;  
-        height = 25; 
-    } else {
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1 || w.ws_col == 0)
+    {
+        width = 80;
+        height = 25;
+    }
+    else
+    {
         width = w.ws_col;
         height = w.ws_row;
-}
+    }
 
 #endif
+}
+
+void setSize()
+{
+    getTerminalSize(width, height);
+    width = 3 * width / 4;
+    height = 3 * height / 4;
+}
+
+void setColor(int color)
+{
+    cout << "\033[" << color << "m";
+}
+
+void resetchange()
+{
+    cout << "\033[0m";
+}
+
+void setbold()
+{
+    cout << "\033[1m";
 }
 
 class Snake
 {
 private:
+<<<<<<< Updated upstream
     vector<pair<int, int>> v;
     int length;
+=======
+    vector<pair<int, int>> body;
+    int length, prevX, prevY;
+    SnakeDirection direction = Up;
+>>>>>>> Stashed changes
 
 public:
     Snake()
     {
-        v.push_back({0, 0});
+        body.push_back({height / 2, width / 2});
+        prevX = body.at(0).first;
+        prevY = body.at(0).second;
         length = 1;
+    }
+    ~Snake()
+    {
+        body.clear();
+        length = 0;
     }
     int getLength()
     {
         return length;
     }
-    void moveSnake() {}
+    SnakeDirection getdirection()
+    {
+        return direction;
+    }
+    void setdirection(SnakeDirection direction)
+    {
+        this->direction = direction;
+    }
+    void updateSnake()
+    {
+        prevX = body.at(0).first, prevY = body.at(0).second;
+
+        for (int i = 1; i < body.size(); i++)
+        {
+            int temp = body.at(i).first;
+            body.at(i).first = prevX;
+            prevX = temp;
+
+            temp = body.at(i).second;
+            body.at(i).second = prevY;
+            prevY = temp;
+        }
+
+        switch (direction)
+        {
+        case Up:
+            body.at(0).first--;
+            break;
+        case Down:
+            body.at(0).first++;
+            break;
+        case Left:
+            body.at(0).second--;
+            break;
+        case Right:
+            body.at(0).second++;
+            break;
+        }
+    }
     void changeLength()
     {
-        length++;
+        body.resize(++length);
     }
-    void printSnake() {}
+    void printSnake()
+    {
+        MOVE_CURSOR(prevX, prevY);
+        cout << " ";
+
+        setColor(33);
+        MOVE_CURSOR(1, 1);
+        cout << "*";
+        resetchange();
+
+        MOVE_CURSOR(body.at(0).first, body.at(0).second);
+        setColor(32);
+        setbold();
+        cout << "o";
+        resetchange();
+    }
+    pair<int, int> getHead()
+    {
+        return body.at(0);
+    }
+    void checkBodyCollision()
+    {
+        for (int i = 1; i < length; i++)
+        {
+            if (body.at(i) == body.at(0))
+            {
+                gameRunning = false;
+                break;
+            }
+        }
+    }
+};
+
+class food
+{
+private:
+    int x, y;
+
+public:
+    food()
+    {
+        srand((unsigned)time(0));
+        x = rand() % height;
+        srand((unsigned)time(0));
+        y = rand() % width;
+        if (x == 1 || x == 0)
+        {
+            x = 2;
+        }
+        if (y == 1 || y == 0)
+        {
+            y = 2;
+        }
+    }
+    int getX()
+    {
+        return x;
+    }
+    int getY()
+    {
+        return y;
+    }
+    void setCoordinates()
+    {
+        srand((unsigned)time(0));
+        x = rand() % height;
+        srand((unsigned)time(0));
+        y = rand() % width;
+        if (x == 1 || x == 0)
+        {
+            x = 2;
+        }
+        if (y == 1 || y == 0)
+        {
+            y = 2;
+        }
+    }
+    void printFood()
+    {
+        setColor(31);
+        MOVE_CURSOR(x, y);
+        cout << "#";
+        resetchange();
+    }
 };
 
 int setDifficulty()
@@ -126,45 +343,45 @@ int setDifficulty()
     cout << "1. Easy" << endl;
     cout << "2. Medium" << endl;
     cout << "3. Hard" << endl;
+    cout << "4. Expert" << endl;
     cout << "Difficulty level: ";
     cin >> difficulty;
     switch (difficulty)
     {
+    case 4:
+        return 50;
+        break;
     case 3:
         return 100;
         break;
     case 2:
-        return 250;
+        return 200;
         break;
     case 1:
-        return 500;
+        return 400;
         break;
     default:
-        return 225;
+        return 200;
         break;
     }
 }
 
-void setColor(int color)
-{
-    cout << "\033[" << color << "m";
-}
-
-void resetColor()
-{
-    cout << "\033[0m";
-}
-
 void printBoard()
 {
+<<<<<<< Updated upstream
     int width, height;
     char c=(char)(177);
     getTerminalSize(width, height);
     width = 3 * min(height, width) / 4;
     height = width;
+=======
+    cout << "\033[2J\033[H";
+    cout.flush();
+>>>>>>> Stashed changes
     setColor(33);
-    for (int j = 0; j < height; j++)
+    for (int i = 0; i <= height; i++)
     {
+<<<<<<< Updated upstream
         cout << c << c;
         for (int i = 0; i < width - 2; i++)
         {
@@ -174,43 +391,72 @@ void printBoard()
                 cout << setw(2) << " ";
         }
         cout << c << c << endl;
+=======
+        for (int j = 0; j <= width; j++)
+        {
+            if (i == 0 || i == height || j == 0 || j == width)
+            {
+                MOVE_CURSOR(i, j);
+                cout << "*"; // Border
+            }
+        }
+>>>>>>> Stashed changes
     }
-    resetColor();
+    resetchange();
 }
 
-void userInput()
+void gameResult(string playerName, int score)
 {
-    if (kbhit())
-    {
-        switch (tolower(getmychar()))
-        {
-        case 'w':
-            // Move up
-            break;
-        case 's':
-            // Move down
-            break;
-        case 'a':
-            // Move left
-            break;
-        case 'd':
-            // Move right
-            break;
-        case 'n':
-            gameRunning = false;
-            break;
-        }
-    }
+    Sleep(1000);
+    cout << "\033[2J\033[H";
+    cout.flush();
+    setColor(31);
+    setbold();
+    cout << setw(45) << "*****  *    *  *****  **** " << endl;
+    cout << setw(45) << "*   *  *    *  *      *   *" << endl;
+    cout << setw(45) << "*   *   *  *   ***    **** " << endl;
+    cout << setw(45) << "*   *   *  *   *      * *  " << endl;
+    cout << setw(45) << "*****    **    *****  *  * " << endl;
+    resetchange();
+    setColor(35);
+    cout << setw(22) << playerName << ", you scored : " << score << endl;
+    resetchange();
 }
 
 int main()
 {
+    string playerName;
+    cout << "Enter Your Name : ";
+    cin >> playerName;
     int dfc = setDifficulty();
+    int score = 0;
+    HideCursor();
+    setSize();
     printBoard();
-    // while (gameRunning)
-    // {
-    //     userInput();
-    //     Sleep(dfc);
-    // }
+    Snake s;
+    food f;
+    while (gameRunning)
+    {
+        s.setdirection(userInput(s.getdirection()));
+        s.updateSnake();
+
+        if (s.getHead().first <= 1 || s.getHead().first >= height || s.getHead().second <= 1 || s.getHead().second >= width)
+        {
+            gameRunning = false;
+            continue;
+        }
+        s.checkBodyCollision();
+
+        if (f.getX() == s.getHead().first && f.getY() == s.getHead().second)
+        {
+            s.changeLength();
+            f.setCoordinates();
+            score += 10;
+        }
+        s.printSnake();
+        f.printFood();
+        Sleep(dfc);
+    }
+    gameResult(playerName, score);
     return 0;
 }
