@@ -91,6 +91,7 @@ Contributions are welcome! To contribute:
 - [Siddhcreator-1706](https://github.com/Siddhcreator-1706)
 - [Tanish-30-08-2006](https://github.com/Tanish-30-08-2006)
 - [Keval-tech](https://github.com/Keval-tech)
+- [khushis02](https://github.com/khushis02)
 
 ## 📜 License
 This project is licensed under the **MIT License**.
