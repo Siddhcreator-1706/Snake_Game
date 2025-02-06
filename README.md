@@ -19,20 +19,25 @@ Welcome to the **Snake Game**! This is a console-based snake game built using **
 1. Clone the repository from GitHub:
    ```sh
    git clone https://github.com/Siddhcreator-1706/Snake_Game.git
+   ```
+ 
+2. Change directory
+   ```sh
    cd Snake_Game
    ```
-2. Compile the game:
+   
+3. Compile the game:
    ```sh
-   g++ snake_game.cpp -o snake_game
+   g++ Snake_Game.cpp -o Snake_Game
    ```
    **For Windows (MinGW users)**:
    ```sh
-   g++ snake_game.cpp -o snake_game.exe -static-libstdc++ -static-libgcc
+   g++ Snake_Game.cpp -o Snake_Game.exe -static-libstdc++ -static-libgcc
    ```
-3. Run the game:
+4. Run the game:
    ```sh
-   ./snake_game  # Linux
-   snake_game.exe  # Windows
+   ./Snake_Game  # Linux
+   Snake_Game.exe  # Windows
    ```
 
 ## 🎮 Usage
