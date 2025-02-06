@@ -15,7 +15,7 @@
 #include <termios.h>
 #include <termios.h> 
 #include <fcntl.h>
-
+struct termios orig_termios;
 void Sleep(int a)
 {
     usleep(1000 * a);
@@ -25,6 +25,14 @@ void Sleep(int a)
 
 using namespace std;
 
+void restoreTerminal()
+{
+#ifndef _WIN32
+    tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios); // Restore original settings
+    cout << "\n";  // Move to a new line to prevent input from appearing in the same line
+    fflush(stdout);
+#endif
+}
 #define MOVE_CURSOR(x, y) cout << "\033[" << (x) << ";" << (y) << "H"
 
 enum SnakeDirection
@@ -80,9 +88,6 @@ SnakeDirection userInput(SnakeDirection direction)
 
     ch = getchar();
 
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
-
     if (ch != EOF)
     {
         switch (tolower(ch))
@@ -108,6 +113,9 @@ SnakeDirection userInput(SnakeDirection direction)
             break;
         }
     }
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
 #endif
     return direction;
 }
@@ -431,6 +439,7 @@ int main()
         Sleep(dfc);
     }
     gameResult(playerName, score);
+    restoreTerminal();
     ShowCursor();
     return 0;
 }
