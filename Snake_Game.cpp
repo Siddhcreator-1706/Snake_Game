@@ -21,7 +21,7 @@ void Sleep(int a)
     usleep(1000 * a);
 }
 void get(){
-    tcgetattr(STDIN_FILENO, &orig_termios;
+    tcgetattr(STDIN_FILENO, &orig_termios);
 }
 void set(){
     tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
