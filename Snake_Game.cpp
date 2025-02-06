@@ -20,19 +20,16 @@ void Sleep(int a)
 {
     usleep(1000 * a);
 }
-
+void get(){
+    tcgetattr(STDIN_FILENO, &orig_termios;
+}
+void set(){
+    tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
+}
 #endif
 
 using namespace std;
 
-void restoreTerminal()
-{
-#ifndef _WIN32
-    tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios); // Restore original settings
-    cout << "\n";  // Move to a new line to prevent input from appearing in the same line
-    fflush(stdout);
-#endif
-}
 #define MOVE_CURSOR(x, y) cout << "\033[" << (x) << ";" << (y) << "H"
 
 enum SnakeDirection
@@ -88,6 +85,8 @@ SnakeDirection userInput(SnakeDirection direction)
 
     ch = getchar();
 
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+
     if (ch != EOF)
     {
         switch (tolower(ch))
@@ -114,8 +113,6 @@ SnakeDirection userInput(SnakeDirection direction)
         }
     }
 
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
 #endif
     return direction;
 }
@@ -406,6 +403,9 @@ void gameResult(string playerName, int score)
 
 int main()
 {
+    #ifndef _WIN32
+        get();
+    #endif 
     string playerName;
     cout << "Enter Your Name : ";
     cin >> playerName;
@@ -439,7 +439,9 @@ int main()
         Sleep(dfc);
     }
     gameResult(playerName, score);
-    restoreTerminal();
     ShowCursor();
+    #ifndef _WIN32
+        set();
+    #endif 
     return 0;
 }
