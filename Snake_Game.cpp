@@ -1,13 +1,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <unistd.h>
-<<<<<<< Updated upstream
-#ifdef _WIN32
-#include <windows.h>
-#include <conio.h>
-#define getmychar() _getch()
-#define kbhit() _kbhit() 
-=======
 #include <iomanip>
 #include <vector>
 #include <ctype.h>
@@ -16,7 +9,6 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <conio.h>
->>>>>>> Stashed changes
 #else
 #include <stdbool.h>
 #include <sys/ioctl.h>
@@ -181,14 +173,9 @@ void setbold()
 class Snake
 {
 private:
-<<<<<<< Updated upstream
-    vector<pair<int, int>> v;
-    int length;
-=======
     vector<pair<int, int>> body;
     int length, prevX, prevY;
     SnakeDirection direction = Up;
->>>>>>> Stashed changes
 
 public:
     Snake()
@@ -368,30 +355,11 @@ int setDifficulty()
 
 void printBoard()
 {
-<<<<<<< Updated upstream
-    int width, height;
-    char c=(char)(177);
-    getTerminalSize(width, height);
-    width = 3 * min(height, width) / 4;
-    height = width;
-=======
     cout << "\033[2J\033[H";
     cout.flush();
->>>>>>> Stashed changes
     setColor(33);
     for (int i = 0; i <= height; i++)
     {
-<<<<<<< Updated upstream
-        cout << c << c;
-        for (int i = 0; i < width - 2; i++)
-        {
-            if (j == 0 || j == height - 1)
-                cout << c << c;
-            else
-                cout << setw(2) << " ";
-        }
-        cout << c << c << endl;
-=======
         for (int j = 0; j <= width; j++)
         {
             if (i == 0 || i == height || j == 0 || j == width)
@@ -400,7 +368,6 @@ void printBoard()
                 cout << "*"; // Border
             }
         }
->>>>>>> Stashed changes
     }
     resetchange();
 }
