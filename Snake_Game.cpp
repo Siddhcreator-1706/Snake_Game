@@ -80,6 +80,9 @@ SnakeDirection userInput(SnakeDirection direction)
 
     ch = getchar();
 
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+
     if (ch != EOF)
     {
         switch (tolower(ch))
@@ -105,9 +108,6 @@ SnakeDirection userInput(SnakeDirection direction)
             break;
         }
     }
-
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
 #endif
     return direction;
 }
