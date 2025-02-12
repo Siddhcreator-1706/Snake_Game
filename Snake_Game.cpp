@@ -274,16 +274,11 @@ public:
     {
         MOVE_CURSOR(prevX, prevY);
         cout << " ";
-        Node *temp = head;
-        while (temp)
-        {
-            MOVE_CURSOR(temp->position.first, temp->position.second);
-            setColor(32);
-            setbold();
-            cout << "o";
-            resetchange();
-            temp = temp->next;
-        }
+        MOVE_CURSOR(head->position.first, head->position.second);
+        setColor(32);
+        setbold();
+        cout << "o";
+        resetchange();
     }
     void changeLength()
     {
@@ -486,7 +481,7 @@ public:
             s.setdirection(userInput(s.getdirection()));
             s.updateSnake();
             if(s.getLength()%5 == 0 && difficulty > 30){
-                difficulty-=5*(level)/4;
+                difficulty-=5;
             }
             if (s.getHead().first <= 1 || s.getHead().first >= height || s.getHead().second <= 1 || s.getHead().second >= width)
             {
@@ -548,6 +543,9 @@ int main()
         g.gameplay();
         g.gameResult();
         ShowCursor();
+        #ifndef _WIN32
+    set();
+#endif
         setColor(36);
         char choice;
         cout << "Do you want to play again? (y/n): ";
