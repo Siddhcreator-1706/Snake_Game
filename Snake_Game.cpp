@@ -2,6 +2,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <iomanip>
+#include <vector>
 #include <ctype.h>
 #include <cstdlib>
 #include <time.h>
@@ -370,10 +371,15 @@ class Game
 {
 private:
     int score = 0, highscore = 0;
-    int difficulty,level;
+    int difficulty, level, obstacles;
     string playerName;
+    vector<pair<int, int>> obs;
 
 public:
+    Game()
+    {
+        obs.resize(5);
+    }
     void GetPlayerName()
     {
         cout << "Enter Your Name : ";
@@ -409,6 +415,13 @@ public:
                     cout << "*"; // Border
                 }
             }
+        }
+        for (int i = 0; i < obs.size(); i++)
+        {
+            MOVE_CURSOR(obs.at(i).first, obs.at(i).second);
+            setColor(38);
+            cout << "$";
+            setColor(33);
         }
         MOVE_CURSOR(height + 1, 1);
         cout << "SCORE :" << endl;
@@ -446,6 +459,29 @@ public:
         case 1:
             difficulty = 200;
             break;
+        }
+        obstacles = max(5 * level, 3);
+
+        obs.resize(obstacles); // ✅ Resize the vector properly
+
+        for (int i = 0; i < obstacles; i++)
+        {
+            int x, y;
+            do
+            {
+                x = rand() % (height - 2) + 1; // ✅ Ensure obstacles are inside bounds
+                y = rand() % (width - 2) + 1;
+            } while (x == height / 2 && y == width / 2); // Avoid placing on the snake start position
+
+            if (x == 0 || x == 1)
+            {
+                x = 5;
+            }
+            if (y == 0 || y == 1)
+            {
+                y = 7;
+            }
+            obs.at(i) = {x, y}; // ✅ Assign directly instead of push_back
         }
     }
     void gameResult()
@@ -485,8 +521,9 @@ public:
         {
             s.setdirection(userInput(s.getdirection()));
             s.updateSnake();
-            if(s.getLength()%5 == 0 && difficulty > 30){
-                difficulty-=5*(level)/4;
+            if (s.getLength() % 5 == 0 && difficulty > 30)
+            {
+                difficulty -= 5 * (level) / 4;
             }
             if (s.getHead().first <= 1 || s.getHead().first >= height || s.getHead().second <= 1 || s.getHead().second >= width)
             {
@@ -494,7 +531,14 @@ public:
                 continue;
             }
             s.checkBodyCollision();
-
+            for (int i = 0; i < obstacles; i++)
+            {
+                if (s.getHead() == obs.at(i))
+                {
+                    gameRunning = false;
+                    break;
+                }
+            }
             if (f.getX() == s.getHead().first && f.getY() == s.getHead().second)
             {
                 s.changeLength();
