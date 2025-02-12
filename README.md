@@ -42,7 +42,7 @@ Welcome to the **Snake Game**! This is a console-based snake game built using **
      ```
    - *On Windows*:
      ```sh
-     Snake_Game.exe
+     ./Snake_Game.exe
       ```
 
 ## 🎮 Usage
